@@ -66,7 +66,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Catalog\Model\Product\Visibility $visibility,
         \Magento\Framework\Module\Manager $moduleManager,
         array $data = []
-    ) {
+    )
+    {
         $this->_websiteFactory = $websiteFactory;
         $this->_setsFactory = $setsFactory;
         $this->_productFactory = $productFactory;
@@ -119,7 +120,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         )->addAttributeToFilter('is_archived', 1);
 
 
-
         if ($this->moduleManager->isEnabled('Magento_CatalogInventory')) {
             $collection->joinField(
                 'qty',
@@ -131,7 +131,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             );
         }
         if ($store->getId()) {
-            //$collection->setStoreId($store->getId());
             $collection->addStoreFilter($store);
             $collection->joinAttribute(
                 'name',
@@ -312,15 +311,23 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->getMassactionBlock()->setFormFieldName('product');
 
         $this->getMassactionBlock()->addItem(
-            'delete',
+            'restore',
             [
                 'label' => __('Restore'),
-                'url' => $this->getUrl('archiveproduct/*/massRestore'),
-                'confirm' => __('Are you sure?')
+                'url' => $this->getUrl('archiveproduct/*/massRestore')
             ]
         );
 
-        $this->_eventManager->dispatch('adminhtml_catalog_product_grid_prepare_massaction', ['block' => $this]);
+        $this->getMassactionBlock()->addItem(
+            'delete',
+            [
+                'label' => __('Remove Permanently'),
+                'url' => $this->getUrl('archiveproduct/*/massDestroy'),
+                'confirm' => __('Are you sure?'),
+
+            ]
+        );
+
         return $this;
     }
 
@@ -332,15 +339,4 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         return $this->getUrl('archiveproduct/*/grid', ['_current' => true]);
     }
 
-//    /**
-//     * @param \Magento\Catalog\Model\Product|\Magento\Framework\Object $row
-//     * @return string
-//     */
-//    public function getRowUrl($row)
-//    {
-//        return $this->getUrl(
-//            'catalog/*/edit',
-//            ['store' => $this->getRequest()->getParam('store'), 'id' => $row->getId()]
-//        );
-//    }
 }

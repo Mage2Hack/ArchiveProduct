@@ -7,4 +7,7 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Catalog\Model\Resource\Product\Collection">
+        <plugin name="removeAtchivedProductsFromCollection" type="Atwix\ArchiveProduct\Plugin\Catalog\Model\Resource\Product\Collection"/>
+    </type>
 </config>

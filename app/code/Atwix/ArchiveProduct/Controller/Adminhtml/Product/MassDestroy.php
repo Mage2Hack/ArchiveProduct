@@ -2,7 +2,7 @@
 
 namespace Atwix\ArchiveProduct\Controller\Adminhtml\Product;
 
-class MassRestore extends \Atwix\ArchiveProduct\Controller\Adminhtml\Product
+class MassDestroy extends \Magento\Catalog\Controller\Adminhtml\Product
 {
     /**
      * @var \Magento\Backend\Model\View\Result\RedirectFactory
@@ -29,22 +29,16 @@ class MassRestore extends \Atwix\ArchiveProduct\Controller\Adminhtml\Product
     public function execute()
     {
         $productIds = $this->getRequest()->getParam('product');
-        $storeId = (int) $this->getRequest()->getParam('store', 0);
-        $isArchived = null;
-
         if (!is_array($productIds) || empty($productIds)) {
             $this->messageManager->addError(__('Please select product(s).'));
         } else {
             try {
                 foreach ($productIds as $productId) {
-
-                    foreach ($productIds as $productId) {
-                        $this->_objectManager->get('Magento\Catalog\Model\Product\Action')
-                            ->updateAttributes($productIds, ['is_archived' => $isArchived], $storeId);
-                    }
+                    $product = $this->_objectManager->get('Magento\Catalog\Model\Product')->load($productId);
+                    $product->delete();
                 }
                 $this->messageManager->addSuccess(
-                    __('A total of %1 record(s) have been restored.', count($productIds))
+                    __('A total of %1 record(s) have been deleted.', count($productIds))
                 );
             } catch (\Exception $e) {
                 $this->messageManager->addError($e->getMessage());
