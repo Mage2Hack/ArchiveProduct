@@ -5,6 +5,11 @@ namespace Atwix\ArchiveProduct\Controller\Adminhtml\Product;
 class MassDestroy extends \Magento\Catalog\Controller\Adminhtml\Product
 {
     /**
+     * @var \Atwix\ArchiveProduct\Helper\Data
+     */
+    protected $_coreHelper;
+
+    /**
      * @var \Magento\Backend\Model\View\Result\RedirectFactory
      */
     protected $resultRedirectFactory;
@@ -17,8 +22,10 @@ class MassDestroy extends \Magento\Catalog\Controller\Adminhtml\Product
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Catalog\Controller\Adminhtml\Product\Builder $productBuilder,
-        \Magento\Backend\Model\View\Result\RedirectFactory $resultRedirectFactory
+        \Magento\Backend\Model\View\Result\RedirectFactory $resultRedirectFactory,
+        \Atwix\ArchiveProduct\Helper\Data $coreHelper
     ) {
+        $this->_coreHelper = $coreHelper;
         parent::__construct($context, $productBuilder);
         $this->resultRedirectFactory = $resultRedirectFactory;
     }
@@ -29,21 +36,7 @@ class MassDestroy extends \Magento\Catalog\Controller\Adminhtml\Product
     public function execute()
     {
         $productIds = $this->getRequest()->getParam('product');
-        if (!is_array($productIds) || empty($productIds)) {
-            $this->messageManager->addError(__('Please select product(s).'));
-        } else {
-            try {
-                foreach ($productIds as $productId) {
-                    $product = $this->_objectManager->get('Magento\Catalog\Model\Product')->load($productId);
-                    $product->delete();
-                }
-                $this->messageManager->addSuccess(
-                    __('A total of %1 record(s) have been deleted.', count($productIds))
-                );
-            } catch (\Exception $e) {
-                $this->messageManager->addError($e->getMessage());
-            }
-        }
+        $this->_coreHelper->destroyProducts($productIds);
         return $this->resultRedirectFactory->create()->setPath('archiveproduct/*/index');
     }
 }
